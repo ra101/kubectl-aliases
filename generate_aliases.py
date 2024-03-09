@@ -39,6 +39,10 @@ def main():
         ('ex', 'exec -i -t', None, None),
         ('lo', 'logs -f', None, None),
         ('lop', 'logs -f -p', None, None),
+        ('e', 'edit', None, None),
+        ('rr', 'rollout restart', None, None),
+        ('rs', 'rollout status', None, None),
+        ('s', 'scale', None, None),
         ('p', 'proxy', None, ['sys']),
         ('pf', 'port-forward', None, ['sys']),
         ('g', 'get', None, None),
@@ -48,14 +52,17 @@ def main():
         ]
 
     res = [
-        ('po', 'pods', ['g', 'd', 'rm'], None),
-        ('dep', 'deployment', ['g', 'd', 'rm'], None),
-        ('sts', 'statefulset', ['g', 'd', 'rm'], None),
-        ('svc', 'service', ['g', 'd', 'rm'], None),
-        ('ing', 'ingress', ['g', 'd', 'rm'], None),
-        ('cm', 'configmap', ['g', 'd', 'rm'], None),
-        ('sec', 'secret', ['g', 'd', 'rm'], None),
+        ('po', 'pods', ['e', 'g', 'd', 'rm'], None),
+        ('dep', 'deployment', ['s', 'rr', 'rs', 'e', 'g', 'd', 'rm'], None),
+        ('ds', 'daemonset', ['rr', 'rs', 'e', 'g', 'd', 'rm'], None),
+        ('svc', 'service', ['e', 'g', 'd', 'rm'], None),
+        ('ing', 'ingress', ['e', 'g', 'd', 'rm'], None),
+        ('cm', 'configmap', ['e', 'g', 'd', 'rm'], None),
+        ('sec', 'secret', ['e', 'g', 'd', 'rm'], None),
+        ('pvc', 'pvc', ['g', 'd', 'rm'], None),
+        ('nad', 'net-attach-def', ['g', 'd', 'rm'], None),
         ('no', 'nodes', ['g', 'd'], ['sys']),
+        ('rs', 'replicaset', ['g', 'd'], ['sys']),
         ('ns', 'namespaces', ['g', 'd', 'rm'], ['sys']),
         ]
     res_types = [r[0] for r in res]
@@ -74,7 +81,7 @@ def main():
     # mutually exclusive within each other.
     positional_args = [('f', '--recursive -f', ['g', 'd', 'rm'], res_types + ['all'
                        , 'l', 'sys']), ('l', '-l', ['g', 'd', 'rm'], ['f',
-                       'all']), ('n', '--namespace', ['g', 'd', 'rm',
+                       'all']), ('n', '--namespace', ['s', 'rr', 'rs', 'e', 'g', 'd', 'rm',
                        'lo', 'ex', 'pf'], ['ns', 'no', 'sys', 'all'])]
 
     # [(part, optional, take_exactly_one)]
@@ -121,6 +128,12 @@ def main():
 
         print(shellFormatting[shell].format(alias, command))
 
+    print(shellFormatting[shell].format('kswag', 'kubectl get --raw /openapi/v2  > /tmp/$KUBECONFIG-openapi-v2.json && docker run -v /tmp/$KUBECONFIG-openapi-v2.json:/app/swagger.json -p 8081:8080 swaggerapi/swagger-ui'))
+
+    if shell == 'fish':
+        print('kubectl completion fish | source')
+    else:
+        print(f'source <(kubectl completion {shell})') 
 
 def gen(parts):
     out = [()]

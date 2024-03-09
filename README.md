@@ -1,4 +1,4 @@
-# kubectl-aliases
+# kubectl-aliases++
 
 This repository contains [a script](generate_aliases.py) to generate hundreds of
 convenient shell aliases for kubectl, so you no longer need to spell out every single
