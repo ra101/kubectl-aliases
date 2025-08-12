@@ -2361,4 +2361,7 @@ alias kghpawsln='kubebin get horizontalpodautoscaler --watch --show-labels --nam
 alias kswag='kubectl get --raw /openapi/v2  > /tmp/$KUBECONFIG-openapi-v2.json && docker run -v /tmp/$KUBECONFIG-openapi-v2.json:/app/swagger.json -p 8081:8080 swaggerapi/swagger-ui'
 
 
-source <(kubectl completion bash)
+source <(kubectl completion zsh)
+compdef k=kubectl
+compdef kubecolor=kubectl
+compdef kubebin=kubectl

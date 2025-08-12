@@ -23,7 +23,7 @@ import sys
 
 def main():
     # (alias, full, allow_when_oneof, incompatible_with)
-    cmds = [('k', 'kubectl', None, None)]
+    cmds = [('k', 'kubebin', None, None)]
 
     globs = [('sys', '--namespace=kube-system', None, None)]
 
@@ -39,13 +39,30 @@ def main():
         ('rr', 'rollout restart', None, None),
         ('rs', 'rollout status', None, None),
         ('s', 'scale', None, None),
+        ('sr', 'set resources', None, None),
+        ('as', 'autoscale', None, None),
+        ('asdep', 'autoscale deployment', None, None),
+        ('asrc', 'autoscale replicaset', None, None),
         ('p', 'proxy', None, ['sys']),
+        ('pa', 'patch', None, ['sys']),
         ('pf', 'port-forward', None, ['sys']),
         ('g', 'get', None, None),
         ('d', 'describe', None, None),
         ('rm', 'delete', None, None),
+        ('l', 'label', None, ['sys']),
+        ('an', 'annotate', None, ['sys']),
         ('run', 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t', None, None),
-        ('chpa', 'autoscale deployment', None, None),
+        ('conf', 'config', None, None),
+        ('config', 'config view', None, None),
+        ('confgc', 'config get-clusters', None, None),
+        ('confdc', 'config delete-cluster', None, None),
+        ('confsc', 'config set-cluster', None, None),
+        ('confgctx', 'config get-contexts', None, None),
+        ('confuctx', 'config use-contexts', None, None),
+        ('confcctx', 'config current-context', None, None),
+        ('confdctx', 'config delete-context', None, None),
+        ('confsctx', 'config set-context', None, None),
+        ('cp', 'cp', None, None),
     ]
 
     res = [
@@ -106,6 +123,7 @@ def main():
         (args, True, False),
         (positional_args, True, True),
         ]
+        
 
     shellFormatting = {
         "bash": "alias {}='{}'",
@@ -130,6 +148,12 @@ def main():
 
     seen_aliases = set()
 
+    # Pre Aliases
+    print('IS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)')
+    print('kubebin() { [ "$IS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }')
+
+    print('\n')
+
     for cmd in out:
         alias = ''.join([a[0] for a in cmd])
         command = ' '.join([a[1] for a in cmd])
@@ -141,12 +165,22 @@ def main():
 
         print(shellFormatting[shell].format(alias, command))
 
+    print('\n')
+
     print(shellFormatting[shell].format('kswag', 'kubectl get --raw /openapi/v2  > /tmp/$KUBECONFIG-openapi-v2.json && docker run -v /tmp/$KUBECONFIG-openapi-v2.json:/app/swagger.json -p 8081:8080 swaggerapi/swagger-ui'))
 
+    print('\n')
+
+    # Post Aliases
     if shell == 'fish':
         print('kubectl completion fish | source')
     else:
-        print(f'source <(kubectl completion {shell})') 
+        print(f'source <(kubectl completion {shell})')
+
+    if shell == 'zsh':
+        print('compdef k=kubectl')
+        print('compdef kubecolor=kubectl')
+        print('compdef kubebin=kubectl')
 
 def gen(parts):
     out = [()]
