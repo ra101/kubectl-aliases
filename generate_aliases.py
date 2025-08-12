@@ -20,11 +20,6 @@ import itertools
 import os.path
 import sys
 
-try:
-    xrange  # Python 2
-except NameError:
-    xrange = range  # Python 3
-
 
 def main():
     # (alias, full, allow_when_oneof, incompatible_with)
@@ -36,6 +31,7 @@ def main():
         ('a', 'apply --recursive -f', None, None),
         ('ak', 'apply -k', None, ['sys']),
         ('k', 'kustomize', None, ['sys']),
+        ('kb', 'kustomize build', None, ['sys']),
         ('ex', 'exec -i -t', None, None),
         ('lo', 'logs -f', None, None),
         ('lop', 'logs -f -p', None, None),
@@ -49,7 +45,8 @@ def main():
         ('d', 'describe', None, None),
         ('rm', 'delete', None, None),
         ('run', 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t', None, None),
-        ]
+        ('chpa', 'autoscale deployment', None, None),
+    ]
 
     res = [
         ('po', 'pods', ['e', 'g', 'd', 'rm'], None),
@@ -59,12 +56,28 @@ def main():
         ('ing', 'ingress', ['e', 'g', 'd', 'rm'], None),
         ('cm', 'configmap', ['e', 'g', 'd', 'rm'], None),
         ('sec', 'secret', ['e', 'g', 'd', 'rm'], None),
+        ('sc', 'sc', ['e', 'g', 'd', 'rm'], None),
+        ('pv', 'pv', ['g', 'd', 'rm'], None),
         ('pvc', 'pvc', ['g', 'd', 'rm'], None),
         ('nad', 'net-attach-def', ['g', 'd', 'rm'], None),
         ('no', 'nodes', ['g', 'd'], ['sys']),
         ('rs', 'replicaset', ['g', 'd'], ['sys']),
         ('ns', 'namespaces', ['g', 'd', 'rm'], ['sys']),
-        ]
+        ('ac', 'admissionconfiguration', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('sa', 'serviceaccount', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('ro', 'role', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('rob', 'rolebinding', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('cro', 'clusterrole', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('crob', 'clusterrolebinding', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('jo', 'jobs', ['e', 'g', 'd', 'rm'], ['sys']),
+        ('np', 'networkpolicy', ['e', 'g', 'd', 'rm'], None),
+        ('gw', 'gateway', ['e', 'g', 'd', 'rm'], None),
+        ('gwc', 'gatewayclass', ['e', 'g', 'd', 'rm'], None),
+        ('http', 'httproute', ['e', 'g', 'd', 'rm'], None),
+        ('grpc', 'grpcroute', ['e', 'g', 'd', 'rm'], None),
+        ('vpa', 'verticalpodautoscaler', ['e', 'g', 'd', 'rm'], None),
+        ('hpa', 'horizontalpodautoscaler', ['e', 'g', 'd', 'rm'], None),
+    ]
     res_types = [r[0] for r in res]
 
     args = [
@@ -75,7 +88,7 @@ def main():
         ('sl', '--show-labels', ['g'], ['oyaml', 'ojson'], None),
         ('all', '--all', ['rm'], None), # caution: reusing the alias
         ('w', '--watch', ['g'], ['oyaml', 'ojson', 'owide']),
-        ]
+    ]
 
     # these accept a value, so they need to be at the end and
     # mutually exclusive within each other.
@@ -194,8 +207,8 @@ def is_valid_incompatibilities(cmd):
 
 
 def combinations(a, n, include_0=True):
-    l = []
-    for j in xrange(0, n + 1):
+    _combinations = []
+    for j in range(0, n + 1):
         if not include_0 and j == 0:
             continue
 
@@ -204,9 +217,9 @@ def combinations(a, n, include_0=True):
         # check incompatibilities early
         cs = (c for c in cs if is_valid_incompatibilities(c))
 
-        l += list(cs)
+        _combinations += list(cs)
 
-    return l
+    return _combinations
 
 
 def diff(a, b):
