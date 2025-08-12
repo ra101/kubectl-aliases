@@ -39,9 +39,10 @@ See [the full list](.kubectl_aliases).
 
 ### Installation
 
-You can directly download the [`.kubectl_aliases` file](https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases)
-for bash/zsh or the [`.kubectl_aliases.fish` file](https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases.fish)
-for fish and save it to your `$HOME` directory.
+You can directly download the [`.kubectl_aliases` file](https://raw.githubusercontent.com/ra101/kubectl-aliases/master/.kubectl_aliases)
+for bash/zsh or the [`.kubectl_aliases.fish` file](https://raw.githubusercontent.com/ra101/kubectl-aliases/master/.kubectl_aliases.fish) for fish
+or the [`.kubectl_aliases.zsh` file](https://raw.githubusercontent.com/ra101/kubectl-aliases/master/.kubectl_aliases.zsh) for zsh
+and save it to your `$HOME` directory.
 
 #### Bash/Zsh
 
@@ -61,7 +62,7 @@ Add the following to your `.bashrc/.zshrc` file:
 `.zshrc` file:
 
 ```sh
-function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }
+function kubectl() { echo "+ kubectl $@" >&2; command kubectl "$@"; }
 ```
 
 #### Fish
@@ -83,31 +84,35 @@ instead of aliases, so that pressing space shows the full command before executi
 
 ### Syntax explanation
 
-* **`k`**=`kubectl`
-  * **`sys`**=`--namespace kube-system`
+* **`k`**: `kubectl`
+  * **`sys`**: `--namespace kube-system`
 * commands:
-  * **`g`**=`get`
-  * **`d`**=`describe`
-  * **`rm`**=`delete`
-  * **`a`**:`apply -f`
-  * **`ak`**:`apply -k`
-  * **`k`**:`kustomize`
+  * **`g`**: `get`
+  * **`d`**: `describe`
+  * **`rm`**: `delete`
+  * **`a`**: `apply -f`
+  * **`ak`**: `apply -k`
+  * **`k`**: `kustomize`
   * **`ex`**: `exec -i -t`
   * **`lo`**: `logs -f`
-* resources:
-  * **`po`**=pod, **`dep`**=`deployment`, **`ing`**=`ingress`,
-    **`svc`**=`service`, **`cm`**=`configmap`, **`sec`**=`secret`,
-    **`ns`**=`namespace`, **`no`**=`node`
-    **:warning: Please do not suggest new resources here, instead fork the project.**
+* resources: **:warning: Please do not suggest new resources here, instead fork the project.**
+  * **`po`**: `pod`
+  * **`dep`**: `deployment`
+  * **`ing`**: `ingress`
+  * **`svc`**: `service`
+  * **`cm`**: `configmap`
+  * **`sec`**: `secret`
+  * **`ns`**: `namespace`
+  * **`no`**: `node`
 * flags:
   * output format: **`oyaml`**, **`ojson`**, **`owide`**
   * **`all`**: `--all` or `--all-namespaces` depending on the command
   * **`sl`**: `--show-labels`
-  * **`w`**=`-w/--watch`
+  * **`w`**: `-w/--watch`
 * value flags (should be at the end):
-  * **`n`**=`-n/--namespace`
-  * **`f`**=`-f/--filename`
-  * **`l`**=`-l/--selector`
+  * **`n`**: `-n/--namespace`
+  * **`f`**: `-f/--filename`
+  * **`l`**: `-l/--selector`
 
 ### Running the script
 
@@ -119,13 +124,16 @@ python generate_aliases.py > .kubectl_aliases
 
 # Generate abbr for fish
 python generate_aliases.py fish > .kubectl_aliases.fish
+
+# Generate aliases for zsh
+python generate_aliases.py zsh > .kubectl_aliases.zsh
 ```
 
 ### FAQ
 
 - **Doesn't this slow down my shell start up?** Sourcing the file that contains
 ~500 aliases takes about 30-45 milliseconds in my shell (zsh). I don't think
-it's a big deal for me. Measure it with `echo $(($(date +%s%N)/1000000))`
+it's a big deal for me. Measure it with `echo $(($(date '+%s%N') / 1000000))`
 command yourself in your .bashrc/.zshrc.
 
 - **Can I add more Kubernetes resource types to this?** Please consider forking
@@ -135,11 +143,3 @@ command yourself in your .bashrc/.zshrc.
 
 - **Where can I find PowerShell aliases for kubectl?** There’s a fork of this
   [here](https://github.com/shanoor/kubectl-aliases-powershell).
-
-### Authors
-
-- [@ahmetb](https://twitter.com/ahmetb)
-
------
-
-This is not an official Google project.
