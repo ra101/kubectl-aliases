@@ -1,3 +1,6 @@
+
+#!/usr/bin/env fish
+
 # Copyright 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +17,6 @@
 
 IS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)
 kubebin() { [ "$IS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }
-
 
 abbr --add k "kubebin"
 abbr --add ksys "kubebin --namespace=kube-system"
@@ -154,6 +156,8 @@ abbr --add kdsc "kubebin describe sc"
 abbr --add ksysdsc "kubebin --namespace=kube-system describe sc"
 abbr --add krmsc "kubebin delete sc"
 abbr --add ksysrmsc "kubebin --namespace=kube-system delete sc"
+abbr --add kepv "kubebin edit pv"
+abbr --add ksysepv "kubebin --namespace=kube-system edit pv"
 abbr --add kgpv "kubebin get pv"
 abbr --add ksysgpv "kubebin --namespace=kube-system get pv"
 abbr --add kdpv "kubebin describe pv"
@@ -166,6 +170,8 @@ abbr --add kdpvc "kubebin describe pvc"
 abbr --add ksysdpvc "kubebin --namespace=kube-system describe pvc"
 abbr --add krmpvc "kubebin delete pvc"
 abbr --add ksysrmpvc "kubebin --namespace=kube-system delete pvc"
+abbr --add kenad "kubebin edit net-attach-def"
+abbr --add ksysenad "kubebin --namespace=kube-system edit net-attach-def"
 abbr --add kgnad "kubebin get net-attach-def"
 abbr --add ksysgnad "kubebin --namespace=kube-system get net-attach-def"
 abbr --add kdnad "kubebin describe net-attach-def"
@@ -174,8 +180,10 @@ abbr --add krmnad "kubebin delete net-attach-def"
 abbr --add ksysrmnad "kubebin --namespace=kube-system delete net-attach-def"
 abbr --add kgno "kubebin get nodes"
 abbr --add kdno "kubebin describe nodes"
+abbr --add kers "kubebin edit replicaset"
 abbr --add kgrs "kubebin get replicaset"
 abbr --add kdrs "kubebin describe replicaset"
+abbr --add krmrs "kubebin delete replicaset"
 abbr --add kgns "kubebin get namespaces"
 abbr --add kdns "kubebin describe namespaces"
 abbr --add krmns "kubebin delete namespaces"
@@ -533,6 +541,7 @@ abbr --add krmpvcall "kubebin delete pvc --all"
 abbr --add ksysrmpvcall "kubebin --namespace=kube-system delete pvc --all"
 abbr --add krmnadall "kubebin delete net-attach-def --all"
 abbr --add ksysrmnadall "kubebin --namespace=kube-system delete net-attach-def --all"
+abbr --add krmrsall "kubebin delete replicaset --all"
 abbr --add krmnsall "kubebin delete namespaces --all"
 abbr --add krmacall "kubebin delete admissionconfiguration --all"
 abbr --add krmsaall "kubebin delete serviceaccount --all"
@@ -1477,6 +1486,7 @@ abbr --add kgnol "kubebin get nodes -l"
 abbr --add kdnol "kubebin describe nodes -l"
 abbr --add kgrsl "kubebin get replicaset -l"
 abbr --add kdrsl "kubebin describe replicaset -l"
+abbr --add krmrsl "kubebin delete replicaset -l"
 abbr --add kgnsl "kubebin get namespaces -l"
 abbr --add kdnsl "kubebin describe namespaces -l"
 abbr --add krmnsl "kubebin delete namespaces -l"
@@ -2022,17 +2032,21 @@ abbr --add kescn "kubebin edit sc --namespace"
 abbr --add kgscn "kubebin get sc --namespace"
 abbr --add kdscn "kubebin describe sc --namespace"
 abbr --add krmscn "kubebin delete sc --namespace"
+abbr --add kepvn "kubebin edit pv --namespace"
 abbr --add kgpvn "kubebin get pv --namespace"
 abbr --add kdpvn "kubebin describe pv --namespace"
 abbr --add krmpvn "kubebin delete pv --namespace"
 abbr --add kgpvcn "kubebin get pvc --namespace"
 abbr --add kdpvcn "kubebin describe pvc --namespace"
 abbr --add krmpvcn "kubebin delete pvc --namespace"
+abbr --add kenadn "kubebin edit net-attach-def --namespace"
 abbr --add kgnadn "kubebin get net-attach-def --namespace"
 abbr --add kdnadn "kubebin describe net-attach-def --namespace"
 abbr --add krmnadn "kubebin delete net-attach-def --namespace"
+abbr --add kersn "kubebin edit replicaset --namespace"
 abbr --add kgrsn "kubebin get replicaset --namespace"
 abbr --add kdrsn "kubebin describe replicaset --namespace"
+abbr --add krmrsn "kubebin delete replicaset --namespace"
 abbr --add keacn "kubebin edit admissionconfiguration --namespace"
 abbr --add kgacn "kubebin get admissionconfiguration --namespace"
 abbr --add kdacn "kubebin describe admissionconfiguration --namespace"
@@ -2335,6 +2349,7 @@ abbr --add kghpawsln "kubebin get horizontalpodautoscaler --watch --show-labels 
 
 
 abbr --add kswag "kubectl get --raw /openapi/v2  > /tmp/$KUBECONFIG-openapi-v2.json && docker run -v /tmp/$KUBECONFIG-openapi-v2.json:/app/swagger.json -p 8081:8080 swaggerapi/swagger-ui"
+
 
 
 kubectl completion fish | source

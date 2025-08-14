@@ -15,13 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
 import itertools
-import os.path
+import os
 import sys
 
 
-def main():
+def generate_aliases(shell):
+    output = ''
+
     # (alias, full, allow_when_oneof, incompatible_with)
     cmds = [('k', 'kubebin', None, None)]
 
@@ -66,34 +67,34 @@ def main():
     ]
 
     res = [
-        ('po', 'pods', ['e', 'g', 'd', 'rm'], None),
-        ('dep', 'deployment', ['s', 'rr', 'rs', 'e', 'g', 'd', 'rm'], None),
-        ('ds', 'daemonset', ['rr', 'rs', 'e', 'g', 'd', 'rm'], None),
-        ('svc', 'service', ['e', 'g', 'd', 'rm'], None),
-        ('ing', 'ingress', ['e', 'g', 'd', 'rm'], None),
-        ('cm', 'configmap', ['e', 'g', 'd', 'rm'], None),
-        ('sec', 'secret', ['e', 'g', 'd', 'rm'], None),
-        ('sc', 'sc', ['e', 'g', 'd', 'rm'], None),
-        ('pv', 'pv', ['g', 'd', 'rm'], None),
+        ('po', 'pods', ['g', 'e', 'd', 'rm'], None),
+        ('dep', 'deployment', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
+        ('ds', 'daemonset', ['rr', 'rs', 'g', 'e', 'd', 'rm'], None),
+        ('svc', 'service', ['g', 'e', 'd', 'rm'], None),
+        ('ing', 'ingress', ['g', 'e', 'd', 'rm'], None),
+        ('cm', 'configmap', ['g', 'e', 'd', 'rm'], None),
+        ('sec', 'secret', ['g', 'e', 'd', 'rm'], None),
+        ('sc', 'sc', ['g', 'e', 'd', 'rm'], None),
+        ('pv', 'pv', ['g', 'e', 'd', 'rm'], None),
         ('pvc', 'pvc', ['g', 'd', 'rm'], None),
-        ('nad', 'net-attach-def', ['g', 'd', 'rm'], None),
+        ('nad', 'net-attach-def', ['g', 'e', 'd', 'rm'], None),
         ('no', 'nodes', ['g', 'd'], ['sys']),
-        ('rs', 'replicaset', ['g', 'd'], ['sys']),
+        ('rs', 'replicaset', ['g', 'e', 'd', 'rm'], ['sys']),
         ('ns', 'namespaces', ['g', 'd', 'rm'], ['sys']),
-        ('ac', 'admissionconfiguration', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('sa', 'serviceaccount', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('ro', 'role', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('rob', 'rolebinding', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('cro', 'clusterrole', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('crob', 'clusterrolebinding', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('jo', 'jobs', ['e', 'g', 'd', 'rm'], ['sys']),
-        ('np', 'networkpolicy', ['e', 'g', 'd', 'rm'], None),
-        ('gw', 'gateway', ['e', 'g', 'd', 'rm'], None),
-        ('gwc', 'gatewayclass', ['e', 'g', 'd', 'rm'], None),
-        ('http', 'httproute', ['e', 'g', 'd', 'rm'], None),
-        ('grpc', 'grpcroute', ['e', 'g', 'd', 'rm'], None),
-        ('vpa', 'verticalpodautoscaler', ['e', 'g', 'd', 'rm'], None),
-        ('hpa', 'horizontalpodautoscaler', ['e', 'g', 'd', 'rm'], None),
+        ('ac', 'admissionconfiguration', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('sa', 'serviceaccount', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('ro', 'role', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('rob', 'rolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('cro', 'clusterrole', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('crob', 'clusterrolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('jo', 'jobs', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('np', 'networkpolicy', ['g', 'e', 'd', 'rm'], None),
+        ('gw', 'gateway', ['g', 'e', 'd', 'rm'], None),
+        ('gwc', 'gatewayclass', ['g', 'e', 'd', 'rm'], None),
+        ('http', 'httproute', ['g', 'e', 'd', 'rm'], None),
+        ('grpc', 'grpcroute', ['g', 'e', 'd', 'rm'], None),
+        ('vpa', 'verticalpodautoscaler', ['g', 'e', 'd', 'rm'], None),
+        ('hpa', 'horizontalpodautoscaler', ['g', 'e', 'd', 'rm'], None),
     ]
     res_types = [r[0] for r in res]
 
@@ -111,7 +112,7 @@ def main():
     # mutually exclusive within each other.
     positional_args = [('f', '--recursive -f', ['g', 'd', 'rm'], res_types + ['all'
                        , 'l', 'sys']), ('l', '-l', ['g', 'd', 'rm'], ['f',
-                       'all']), ('n', '--namespace', ['s', 'rr', 'rs', 'e', 'g', 'd', 'rm',
+                       'all']), ('n', '--namespace', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm',
                        'lo', 'ex', 'pf'], ['ns', 'no', 'sys', 'all'])]
 
     # [(part, optional, take_exactly_one)]
@@ -126,61 +127,64 @@ def main():
         
 
     shellFormatting = {
-        "bash": "alias {}='{}'",
-        "zsh": "alias {}='{}'",
-        "fish": "abbr --add {} \"{}\"",
+        "bash": "alias {}='{}'\n",
+        "zsh": "alias {}='{}'\n",
+        "fish": "abbr --add {} \"{}\"\n",
     }
 
-    shell = sys.argv[1] if len(sys.argv) > 1 else "bash"
     if shell not in shellFormatting:
         raise ValueError("Shell \"{}\" not supported. Options are {}"
                         .format(shell, [key for key in shellFormatting]))
 
     out = gen(parts)
 
+
+    output += ('\n#!/usr/bin/env {}\n\n'.format(shell))
+
     # prepare output
-    if not sys.stdout.isatty():
-        header_path = \
-            os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                         'license_header')
-        with open(header_path, 'r') as f:
-            print(f.read())
+    header_path = \
+        os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        'license_header')
+    with open(header_path, 'r') as f:
+        output += (f.read())
 
     seen_aliases = set()
 
     # Pre Aliases
-    print('IS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)')
-    print('kubebin() { [ "$IS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }')
+    output += ('\nIS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)')
+    output += ('\nkubebin() { [ "$IS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }')
 
-    print('\n')
+    output += ('\n\n')
 
     for cmd in out:
         alias = ''.join([a[0] for a in cmd])
         command = ' '.join([a[1] for a in cmd])
 
         if alias in seen_aliases:
-            print("Alias conflict detected: {}".format(alias), file=sys.stderr)
+            raise RuntimeError("Alias conflict detected: {}".format(alias))
 
         seen_aliases.add(alias)
 
-        print(shellFormatting[shell].format(alias, command))
+        output += (shellFormatting[shell].format(alias, command))
 
-    print('\n')
+    output += ('\n\n')
 
-    print(shellFormatting[shell].format('kswag', 'kubectl get --raw /openapi/v2  > /tmp/$KUBECONFIG-openapi-v2.json && docker run -v /tmp/$KUBECONFIG-openapi-v2.json:/app/swagger.json -p 8081:8080 swaggerapi/swagger-ui'))
+    output += (shellFormatting[shell].format('kswag', 'kubectl get --raw /openapi/v2  > /tmp/$KUBECONFIG-openapi-v2.json && docker run -v /tmp/$KUBECONFIG-openapi-v2.json:/app/swagger.json -p 8081:8080 swaggerapi/swagger-ui'))
 
-    print('\n')
+    output += ('\n\n')
 
     # Post Aliases
     if shell == 'fish':
-        print('kubectl completion fish | source')
+        output += ('\nkubectl completion fish | source')
     else:
-        print(f'source <(kubectl completion {shell})')
+        output += (f'source <(kubectl completion {shell})')
 
     if shell == 'zsh':
-        print('compdef k=kubectl')
-        print('compdef kubecolor=kubectl')
-        print('compdef kubebin=kubectl')
+        output += ('\ncompdef k=kubectl')
+        output += ('\ncompdef kubecolor=kubectl')
+        output += ('\ncompdef kubebin=kubectl')
+
+    return output
 
 def gen(parts):
     out = [()]
@@ -261,4 +265,6 @@ def diff(a, b):
 
 
 if __name__ == '__main__':
-    main()
+    for shell in ['bash', 'zsh', 'fish']:
+        with open(f'.kubectl_aliases.{shell}', 'w') as f:
+            f.write(generate_aliases(shell))
