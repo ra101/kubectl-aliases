@@ -69,6 +69,7 @@ def generate_aliases(shell):
     res = [
         ('po', 'pods', ['g', 'e', 'd', 'rm'], None),
         ('dep', 'deployment', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
+        ('st', 'statefulset', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('ds', 'daemonset', ['rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('svc', 'service', ['g', 'e', 'd', 'rm'], None),
         ('ing', 'ingress', ['g', 'e', 'd', 'rm'], None),
