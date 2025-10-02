@@ -89,6 +89,7 @@ def generate_aliases(shell):
         ('cro', 'clusterrole', ['g', 'e', 'd', 'rm'], ['sys']),
         ('crob', 'clusterrolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
         ('jo', 'jobs', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('cjo', 'cronjobs', ['g', 'e', 'd', 'rm'], ['sys']),
         ('np', 'networkpolicy', ['g', 'e', 'd', 'rm'], None),
         ('gw', 'gateway', ['g', 'e', 'd', 'rm'], None),
         ('gwc', 'gatewayclass', ['g', 'e', 'd', 'rm'], None),
