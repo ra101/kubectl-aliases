@@ -34,11 +34,17 @@ def generate_aliases(shell):
         ('ak', 'apply -k', None, ['sys']),
         ('k', 'kustomize', None, ['sys']),
         ('kb', 'kustomize build', None, ['sys']),
+        ('v', 'virt', None, ['sys']),
         ('ex', 'exec -i -t', None, None),
+        ('vex', 'virt ssh -i -t', None, ['sys']),
         ('lo', 'logs -f', None, None),
         ('lop', 'logs -f -p', None, None),
         ('e', 'edit', None, None),
         ('rr', 'rollout restart', None, None),
+        ('vst', 'virt start', None, ['sys']),
+        ('vr', 'virt reset', None, ['sys']),
+        ('vrr', 'virt restart', None, ['sys']),
+        ('vsr', 'virt soft-reboot', None, ['sys']),
         ('rs', 'rollout status', None, None),
         ('s', 'scale', None, None),
         ('sr', 'set resources', None, None),
@@ -51,6 +57,9 @@ def generate_aliases(shell):
         ('g', 'get', None, None),
         ('d', 'describe', None, None),
         ('rm', 'delete', None, None),
+        ('vp', 'virt pause', None, ['sys']),
+        ('vup', 'virt unpause', None, ['sys']),
+        ('vsp', 'virt stop', None, ['sys']),
         ('l', 'label', None, ['sys']),
         ('an', 'annotate', None, ['sys']),
         ('run', 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t', None, None),
@@ -65,12 +74,16 @@ def generate_aliases(shell):
         ('confdctx', 'config delete-context', None, None),
         ('confsctx', 'config set-context', None, None),
         ('cp', 'cp', None, None),
+        ('kvcp', 'virt scp', None, ['sys']),
     ]
 
     # (alias, full, require_oneof, incompatible_with)
     resources = [
         ('po', 'pods', ['g', 'e', 'd', 'rm'], None),
+        ('vmi', 'virtualmachineinstance', ['g', 'e', 'd', 'rm'], None),
+        ('vmim', 'virtualmachineinstancemigration', ['g', 'e', 'd', 'rm'], None),
         ('dep', 'deployment', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
+        ('vm', 'virtualmachine', ['g', 'e', 'd', 'rm'], None),
         ('st', 'statefulset', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('ds', 'daemonset', ['rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('svc', 'service', ['g', 'e', 'd', 'rm'], None),
@@ -160,8 +173,15 @@ def generate_aliases(shell):
     seen_aliases = set()
 
     # Pre Aliases
-    output += ('\nIS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)')
-    output += ('\nkubebin() { [ "$IS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }')
+    output += (
+        '\nHAS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)'
+        '\nkubebin() { [ "$HAS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }\n'
+    )
+
+    output += (
+        '\nHAS_VIRTCTL=$(command -v virtctl >/dev/null 2>&1 && echo 1 || echo 0)'
+        '\nvirtbin() { [ "$HAS_VIRTCTL" -eq 1 ] && virtctl "$@" || kubectl virt "$@"; }\n'
+    )
 
     output += ('\n\n')
 
@@ -174,6 +194,9 @@ def generate_aliases(shell):
                 'get events',
                 'get events --sort-by=.metadata.creationTimestamp'
             )
+        
+        if command.startswith('kubebin virt'):
+            command = command.replace('kubebin virt', 'virtbin')
 
         if alias in seen_aliases:
             raise RuntimeError("Alias conflict detected: {}".format(alias))
