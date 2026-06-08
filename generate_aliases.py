@@ -74,6 +74,8 @@ def generate_aliases(shell):
         ('st', 'statefulset', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('ds', 'daemonset', ['rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('svc', 'service', ['g', 'e', 'd', 'rm'], None),
+        ('ep', 'endpoints', ['g', 'e', 'd', 'rm'], None),
+        ('eps', 'endpointslices', ['g', 'e', 'd', 'rm'], None),
         ('ing', 'ingress', ['g', 'e', 'd', 'rm'], None),
         ('cm', 'configmap', ['g', 'e', 'd', 'rm'], None),
         ('sec', 'secret', ['g', 'e', 'd', 'rm'], None),
