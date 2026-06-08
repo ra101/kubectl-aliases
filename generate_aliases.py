@@ -101,6 +101,7 @@ def generate_aliases(shell):
         ('grpc', 'grpcroute', ['g', 'e', 'd', 'rm'], None),
         ('vpa', 'verticalpodautoscaler', ['g', 'e', 'd', 'rm'], None),
         ('hpa', 'horizontalpodautoscaler', ['g', 'e', 'd', 'rm'], None),
+        ('ev', 'events', ['g', 'e', 'd', 'rm'], None),
     ]
     res_types = [r[0] for r in resources]
 
@@ -121,7 +122,8 @@ def generate_aliases(shell):
     # 
     positional_args = [
         ('f', '--recursive -f', ['g', 'd', 'rm'], res_types + ['all', 'l', 'sys']),
-        ('n', '--namespace', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm', 'lo', 'ex', 'pf'], ['ns', 'no', 'sys', 'all'])]
+        ('n', '--namespace', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm', 'lo', 'ex', 'pf'], ['ns', 'no', 'sys', 'all'])
+    ]
 
     # [(part, optional, take_exactly_one)]
     parts = [
@@ -166,6 +168,12 @@ def generate_aliases(shell):
     for cmd in out:
         alias = ''.join([a[0] for a in cmd])
         command = ' '.join([a[1] for a in cmd])
+        
+        if command.startswith('kubebin get events'):
+            command.replace(
+                'get events',
+                'get events --sort-by=.metadata.creationTimestamp'
+            )
 
         if alias in seen_aliases:
             raise RuntimeError("Alias conflict detected: {}".format(alias))
