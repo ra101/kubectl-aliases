@@ -86,12 +86,12 @@ def generate_aliases(shell):
         ('ns', 'namespaces', ['g', 'd', 'rm'], ['sys']),
         ('ac', 'admissionconfiguration', ['g', 'e', 'd', 'rm'], ['sys']),
         ('sa', 'serviceaccount', ['g', 'e', 'd', 'rm'], ['sys']),
-        ('ro', 'role', ['g', 'e', 'd', 'rm'], ['sys']),
-        ('rob', 'rolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
-        ('cro', 'clusterrole', ['g', 'e', 'd', 'rm'], ['sys']),
-        ('crob', 'clusterrolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
-        ('jo', 'jobs', ['g', 'e', 'd', 'rm'], ['sys']),
-        ('cjo', 'cronjobs', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('r', 'role', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('rb', 'rolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('cr', 'clusterrole', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('crb', 'clusterrolebinding', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('j', 'jobs', ['g', 'e', 'd', 'rm'], ['sys']),
+        ('cj', 'cronjobs', ['g', 'e', 'd', 'rm'], ['sys']),
         ('np', 'networkpolicy', ['g', 'e', 'd', 'rm'], None),
         ('gw', 'gateway', ['g', 'e', 'd', 'rm'], None),
         ('gwc', 'gatewayclass', ['g', 'e', 'd', 'rm'], None),
@@ -116,10 +116,10 @@ def generate_aliases(shell):
 
     # these accept a value, so they need to be at the end and
     # mutually exclusive within each other.
-    positional_args = [('f', '--recursive -f', ['g', 'd', 'rm'], res_types + ['all'
-                       , 'l', 'sys']), ('l', '-l', ['g', 'd', 'rm'], ['f',
-                       'all']), ('n', '--namespace', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm',
-                       'lo', 'ex', 'pf'], ['ns', 'no', 'sys', 'all'])]
+    # 
+    positional_args = [
+        ('f', '--recursive -f', ['g', 'd', 'rm'], res_types + ['all', 'l', 'sys']),
+        ('n', '--namespace', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm', 'lo', 'ex', 'pf'], ['ns', 'no', 'sys', 'all'])]
 
     # [(part, optional, take_exactly_one)]
     parts = [
