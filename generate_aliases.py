@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import itertools
+
 import os
-import sys
+import itertools
 
 
 def generate_aliases(shell):
@@ -26,9 +26,10 @@ def generate_aliases(shell):
     # (alias, full, allow_when_oneof, incompatible_with)
     cmds = [('k', 'kubebin', None, None)]
 
-    globs = [('sys', '--namespace=kube-system', None, None)]
+    _globals = [('sys', '--namespace=kube-system', None, None)]
 
-    ops = [
+    # (alias, full, require_oneof, incompatible_with)
+    operations = [
         ('a', 'apply --recursive -f', None, None),
         ('ak', 'apply -k', None, ['sys']),
         ('k', 'kustomize', None, ['sys']),
@@ -66,7 +67,8 @@ def generate_aliases(shell):
         ('cp', 'cp', None, None),
     ]
 
-    res = [
+    # (alias, full, require_oneof, incompatible_with)
+    resources = [
         ('po', 'pods', ['g', 'e', 'd', 'rm'], None),
         ('dep', 'deployment', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('st', 'statefulset', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
@@ -98,15 +100,17 @@ def generate_aliases(shell):
         ('vpa', 'verticalpodautoscaler', ['g', 'e', 'd', 'rm'], None),
         ('hpa', 'horizontalpodautoscaler', ['g', 'e', 'd', 'rm'], None),
     ]
-    res_types = [r[0] for r in res]
+    res_types = [r[0] for r in resources]
 
+    # (alias, full, require_oneof, incompatible_with)
     args = [
         ('oyaml', '-o=yaml', ['g'], ['owide', 'ojson', 'sl']),
         ('owide', '-o=wide', ['g'], ['oyaml', 'ojson']),
         ('ojson', '-o=json', ['g'], ['owide', 'oyaml', 'sl']),
-        ('all', '--all-namespaces', ['g', 'd'], ['rm', 'f', 'no', 'ns', 'sys']),
+        ('all', '--all-namespaces', ['g', 'd'], [
+            'rm', 'f', 'no', 'ns', 'sys']),
         ('sl', '--show-labels', ['g'], ['oyaml', 'ojson'], None),
-        ('all', '--all', ['rm'], None), # caution: reusing the alias
+        ('all', '--all', ['rm'], None),  # caution: reusing the alias
         ('w', '--watch', ['g'], ['oyaml', 'ojson', 'owide']),
     ]
 
@@ -120,13 +124,12 @@ def generate_aliases(shell):
     # [(part, optional, take_exactly_one)]
     parts = [
         (cmds, False, True),
-        (globs, True, False),
-        (ops, True, True),
-        (res, True, True),
+        (_globals, True, False),
+        (operations, True, True),
+        (resources, True, True),
         (args, True, False),
         (positional_args, True, True),
-        ]
-        
+    ]
 
     shellFormatting = {
         "bash": "alias {}='{}'\n",
@@ -135,11 +138,11 @@ def generate_aliases(shell):
     }
 
     if shell not in shellFormatting:
-        raise ValueError("Shell \"{}\" not supported. Options are {}"
-                        .format(shell, [key for key in shellFormatting]))
+        raise ValueError(
+            "Shell \"{}\" not supported. Options are {}".format(
+                shell, [key for key in shellFormatting]))
 
-    out = gen(parts)
-
+    out = generate_combinations(parts)
 
     output += ('\n#!/usr/bin/env {}\n\n'.format(shell))
 
@@ -188,9 +191,17 @@ def generate_aliases(shell):
 
     return output
 
-def gen(parts):
+
+def generate_combinations(parts):
+    """
+    Generates all valid combinations of the given parts,
+    where each part is a list of tuples of
+    (alias, full, require_oneof, incompatible_with)
+    and the boolean flags (optional, take_exactly_one)
+    specify how to combine the tuples.
+    """
     out = [()]
-    for (items, optional, take_exactly_one) in parts:
+    for items, optional, take_exactly_one in parts:
         orig = list(out)
         combos = []
 
