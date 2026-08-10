@@ -44,6 +44,7 @@ def generate_aliases(shell):
         ('v', 'virt', None, ['sys']),
         ('ex', 'exec -i -t', None, None),
         ('vex', f'virt ssh {SSH_OPTS}', None, ['sys']),
+        ('nex', 'node-shell', None, None),
         ('lo', 'logs -f', None, None),
         ('lop', 'logs -f -p', None, None),
         ('e', 'edit', None, None),
