@@ -91,7 +91,7 @@ def generate_aliases(shell):
         ('vmi', 'virtualmachineinstance', ['g', 'e', 'd', 'rm'], None),
         ('vmim', 'virtualmachineinstancemigration', ['g', 'e', 'd', 'rm'], None),
         ('dep', 'deployment', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
-        ('vmpool', 'virtualmachinepool', ['g', 'e', 'd', 'rm', 's'], None),
+        ('vmp', 'virtualmachinepool', ['g', 'e', 'd', 'rm', 's'], None),
         ('st', 'statefulset', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('ds', 'daemonset', ['rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('svc', 'service', ['g', 'e', 'd', 'rm'], None),
@@ -200,13 +200,13 @@ def generate_aliases(shell):
     for cmd in out:
         alias = ''.join([a[0] for a in cmd])
         command = ' '.join([a[1] for a in cmd])
-        
+
         if command.startswith('kubebin get events'):
             command.replace(
                 'get events',
                 'get events --sort-by=.metadata.creationTimestamp'
             )
-        
+
         if command.startswith('kubebin virt'):
             command = command.replace('kubebin virt', 'virtbin')
 
