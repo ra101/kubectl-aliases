@@ -182,16 +182,20 @@ def generate_aliases(shell):
 
     # Pre Aliases
     output += (
-        '\nHAS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)'
-        '\nkubebin() { if [ "$HAS_KUBECOLOR" -eq 1 ]; then kubecolor "$@"; else kubectl "$@"; fi; }\n'
+        '\nif command -v kubecolor >/dev/null 2>&1; then'
+        '\n    kubebin() { kubecolor "$@"; }'
+        '\nelse'
+        '\n    kubebin() { kubectl "$@"; }'
+        '\nfi\n'
     )
 
     output += (
-        '\nHAS_VIRTCTL=$(command -v virtctl >/dev/null 2>&1 && echo 1 || echo 0)'
-        '\nvirtbin() { if [ "$HAS_VIRTCTL" -eq 1 ]; then virtctl "$@"; else kubectl virt "$@"; fi; }\n'
+        '\nif command -v virtctl >/dev/null 2>&1; then'
+        '\n    virtbin() { virtctl "$@"; }'
+        '\nelse'
+        '\n    virtbin() { kubectl virt "$@"; }'
+        '\nfi\n\n'
     )
-
-    output += ('\n\n')
 
     for cmd in out:
         alias = ''.join([a[0] for a in cmd])

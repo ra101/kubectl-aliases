@@ -15,12 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-HAS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)
-kubebin() { if [ "$HAS_KUBECOLOR" -eq 1 ]; then kubecolor "$@"; else kubectl "$@"; fi; }
+if command -v kubecolor >/dev/null 2>&1; then
+    kubebin() { kubecolor "$@"; }
+else
+    kubebin() { kubectl "$@"; }
+fi
 
-HAS_VIRTCTL=$(command -v virtctl >/dev/null 2>&1 && echo 1 || echo 0)
-virtbin() { if [ "$HAS_VIRTCTL" -eq 1 ]; then virtctl "$@"; else kubectl virt "$@"; fi; }
-
+if command -v virtctl >/dev/null 2>&1; then
+    virtbin() { virtctl "$@"; }
+else
+    virtbin() { kubectl virt "$@"; }
+fi
 
 abbr --add k "kubebin"
 abbr --add ksys "kubebin --namespace=kube-system"
