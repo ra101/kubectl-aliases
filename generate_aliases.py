@@ -20,6 +20,13 @@ import os
 import itertools
 
 
+SSH_OPTS = (
+    '--local-ssh-opts="-o UserKnownHostsFile=/dev/null" '
+    '--local-ssh-opts="-o StrictHostKeyChecking=no" '
+    '--local-ssh-opts="-o LogLevel=ERROR" '
+)
+
+
 def generate_aliases(shell):
     output = ''
 
@@ -36,7 +43,7 @@ def generate_aliases(shell):
         ('kb', 'kustomize build', None, ['sys']),
         ('v', 'virt', None, ['sys']),
         ('ex', 'exec -i -t', None, None),
-        ('vex', 'virt ssh -i -t', None, ['sys']),
+        ('vex', f'virt ssh {SSH_OPTS}', None, ['sys']),
         ('lo', 'logs -f', None, None),
         ('lop', 'logs -f -p', None, None),
         ('e', 'edit', None, None),
@@ -80,10 +87,11 @@ def generate_aliases(shell):
     # (alias, full, require_oneof, incompatible_with)
     resources = [
         ('po', 'pods', ['g', 'e', 'd', 'rm'], None),
+        ('vm', 'virtualmachine', ['g', 'e', 'd', 'rm'], None),
         ('vmi', 'virtualmachineinstance', ['g', 'e', 'd', 'rm'], None),
         ('vmim', 'virtualmachineinstancemigration', ['g', 'e', 'd', 'rm'], None),
         ('dep', 'deployment', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
-        ('vm', 'virtualmachine', ['g', 'e', 'd', 'rm'], None),
+        ('vmpool', 'virtualmachinepool', ['g', 'e', 'd', 'rm', 's'], None),
         ('st', 'statefulset', ['s', 'rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('ds', 'daemonset', ['rr', 'rs', 'g', 'e', 'd', 'rm'], None),
         ('svc', 'service', ['g', 'e', 'd', 'rm'], None),
@@ -175,12 +183,12 @@ def generate_aliases(shell):
     # Pre Aliases
     output += (
         '\nHAS_KUBECOLOR=$(command -v kubecolor >/dev/null 2>&1 && echo 1 || echo 0)'
-        '\nkubebin() { [ "$HAS_KUBECOLOR" -eq 1 ] && kubecolor "$@" || kubectl "$@"; }\n'
+        '\nkubebin() { if [ "$HAS_KUBECOLOR" -eq 1 ]; then kubecolor "$@"; else kubectl "$@"; fi; }\n'
     )
 
     output += (
         '\nHAS_VIRTCTL=$(command -v virtctl >/dev/null 2>&1 && echo 1 || echo 0)'
-        '\nvirtbin() { [ "$HAS_VIRTCTL" -eq 1 ] && virtctl "$@" || kubectl virt "$@"; }\n'
+        '\nvirtbin() { if [ "$HAS_VIRTCTL" -eq 1 ]; then virtctl "$@"; else kubectl virt "$@"; fi; }\n'
     )
 
     output += ('\n\n')
